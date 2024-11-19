@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Poll on Corruption in LK</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            margin-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .question {
+            display: none;
+        }
+        .question.active {
+            display: block;
+        }
+        p {
+            font-size: 18px;
+            color: #444;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .ranking-option {
+            padding: 10px;
+            margin: 8px 0;
+            background-color: #f9f9f9;
+            cursor: move;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .ranking-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .button-container {
+            text-align: right;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .prev-btn {
+            background-color: #007bff;
+        }
+        .prev-btn:hover {
+            background-color: #0069d9;
+        }
+        /* Styling for the progress bar */
+        .progress-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #28a745;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Poll on Corruption in LK</h1>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+
+        <!-- Question 1 -->
+        <div class="question active" id="question-1">
+            <p>1. Who do you think is the most corrupt group in Sri Lanka?</p>
+            <label><input type="radio" name="q1" value="Politicians">Politicians</label>
+            <label><input type="radio" name="q1" value="Academics">Academics</label>
+            <label><input type="radio" name="q1" value="Religious leaders">Religious leaders</label>
+            <label><input type="radio" name="q1" value="Businessmen">Businessmen</label>
+            <label><input type="radio" name="q1" value="All are equally corrupt">All are equally corrupt</label>
+            <div class="button-container">
+                <button onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question" id="question-2">
+            <p>2. What punishment should be given to a politician proven guilty of stealing public wealth?</p>
+            <label><input type="radio" name="q2" value="Capital punishment">Capital punishment</label>
+            <label><input type="radio" name="q2" value="Long-term imprisonment">Long-term imprisonment</label>
+            <label><input type="radio" name="q2" value="Imprisonment + Regaining the stolen money">Imprisonment + Regaining the stolen money</label>
+            <label><input type="radio" name="q2" value="Repaying stolen money + temporary ban from politics">Repaying stolen money + temporary ban from politics</label>
+            <label><input type="radio" name="q2" value="Releasing after advice without any punishment">Releasing after advice without any punishment</label>
+            <div class="button-container">
+                <button class="prev-btn" onclick="prevQuestion()">Previous</button>
+                <button onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question" id="question-3">
+            <p>3. What should be the most important criterion for electing a politician? Rank according to your thoughts.</p>
+            <ul id="ranking-list" class="ranking-list">
+                <li class="ranking-option" draggable="true">Integrity and honesty</li>
+                <li class="ranking-option" draggable="true">Academic qualifications</li>
+                <li class="ranking-option" draggable="true">Prior experience in governance</li>
+                <li class="ranking-option" draggable="true">Popularity among the public</li>
+            </ul>
+            <div class="button-container">
+                <button class="prev-btn" onclick="prevQuestion()">Previous</button>
+                <button onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question" id="question-4">
+            <p>4. Do you think electing academics to Parliament can reduce corruption?</p>
+            <label><input type="radio" name="q4" value="Yes">Yes</label>
+            <label><input type="radio" name="q4" value="No">No</label>
+            <div class="button-container">
+                <button class="prev-btn" onclick="prevQuestion()">Previous</button>
+                <button onclick="nextQuestion()">Next</button>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question" id="question-5">
+            <p>5. Do you think corruption in academia is less harmful than corruption in politics?</p>
+            <label><input type="radio" name="q5" value="Yes, it impacts fewer people">Yes, it impacts fewer people</label>
+            <label><input type="radio" name="q5" value="No, it's equally harmful">No, it's equally harmful</label>
+            <label><input type="radio" name="q5" value="It depends on the situation">It depends on the situation</label>
+            <div class="button-container">
+                <button class="prev-btn" onclick="prevQuestion()">Previous</button>
+                <button onclick="submitPoll()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables to keep track of the current question
+        let currentQuestion = 1;
+        const totalQuestions = 5;
+
+        // Function to show the next question
+        function nextQuestion() {
+            // Validate if an option is selected (except for the ranking question)
+            if (currentQuestion !== 3) {
+                const inputs = document.querySelectorAll(`#question-${currentQuestion} input[type="radio"]`);
+                let answered = false;
+                inputs.forEach(input => {
+                    if (input.checked) {
+                        answered = true;
+                    }
+                });
+                if (!answered) {
+                    alert('Please select an option to proceed.');
+                    return;
+                }
+            }
+            // Hide current question
+            document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+            currentQuestion++;
+            // Show next question
+            document.getElementById(`question-${currentQuestion}`).classList.add('active');
+            updateProgressBar();
+        }
+
+        // Function to show the previous question
+        function prevQuestion() {
+            // Hide current question
+            document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+            currentQuestion--;
+            // Show previous question
+            document.getElementById(`question-${currentQuestion}`).classList.add('active');
+            updateProgressBar();
+        }
+
+        // Function to update the progress bar
+        function updateProgressBar() {
+            const progressFill = document.getElementById('progress-bar-fill');
+            const progressPercent = ((currentQuestion - 1) / totalQuestions) * 100;
+            progressFill.style.width = `${progressPercent}%`;
+        }
+
+        // Drag and Drop functionality for Question 3
+        const rankingOptions = document.querySelectorAll('.ranking-option');
+        let dragSrcEl = null;
+
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
+            this.classList.add('dragElem');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            this.classList.add('over');
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            this.classList.remove('over');
+            if (dragSrcEl !== this) {
+                this.parentNode.removeChild(dragSrcEl);
+                const dropHTML = e.dataTransfer.getData('text/html');
+                this.insertAdjacentHTML('beforebegin', dropHTML);
+                const droppedElem = this.previousSibling;
+                addDnDHandlers(droppedElem);
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('over');
+        }
+
+        function addDnDHandlers(elem) {
+            elem.addEventListener('dragstart', handleDragStart, false);
+            elem.addEventListener('dragover', handleDragOver, false);
+            elem.addEventListener('dragleave', handleDragLeave, false);
+            elem.addEventListener('drop', handleDrop, false);
+            elem.addEventListener('dragend', handleDragEnd, false);
+        }
+
+        rankingOptions.forEach(function(option) {
+            addDnDHandlers(option);
+        });
+
+        // Function to submit the poll
+        function submitPoll() {
+            // Validate if an option is selected for the last question
+            const inputs = document.querySelectorAll(`#question-${currentQuestion} input[type="radio"]`);
+            let answered = false;
+            inputs.forEach(input => {
+                if (input.checked) {
+                    answered = true;
+                }
+            });
+            if (!answered) {
+                alert('Please select an option to proceed.');
+                return;
+            }
+
+            // Collect responses
+            let data = {};
+
+            // Question 1
+            let q1 = document.querySelector('input[name="q1"]:checked');
+            data.q1 = q1 ? q1.value : null;
+
+            // Question 2
+            let q2 = document.querySelector('input[name="q2"]:checked');
+            data.q2 = q2 ? q2.value : null;
+
+            // Question 3
+            let q3 = [];
+            document.querySelectorAll('#question-3 .ranking-option').forEach(function(option) {
+                q3.push(option.innerText);
+            });
+            data.q3 = q3;
+
+            // Question 4
+            let q4 = document.querySelector('input[name="q4"]:checked');
+            data.q4 = q4 ? q4.value : null;
+
+            // Question 5
+            let q5 = document.querySelector('input[name="q5"]:checked');
+            data.q5 = q5 ? q5.value : null;
+
+            // Display collected data (you can replace this with code to send data to a server)
+            alert('Thank you for completing the poll!\n\nYour responses:\n' + JSON.stringify(data, null, 2));
+
+            // Optionally, you can redirect to a thank-you page or reset the poll
+            // window.location.href = 'thankyou.html';
+        }
+    </script>
+</body>
+</html>
+
